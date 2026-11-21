@@ -1,0 +1,68 @@
+{
+  "anomaly_detection": {
+    "algorithm": "Isolation Forest + Statistical Deviation Thresholds",
+    "samples": 1200,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "accuracy": 1.0
+  },
+  "severity_prediction": {
+    "algorithm": "Random Forest Multi-Class Classifier (P0-P3)",
+    "test_samples": 300,
+    "precision": 0.9573,
+    "recall": 0.9767,
+    "f1": 0.9668,
+    "accuracy": 0.9767,
+    "confusion_matrix": [
+      [
+        36,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        64,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        193,
+        0
+      ],
+      [
+        0,
+        0,
+        6,
+        0
+      ]
+    ],
+    "labels": [
+      "P0",
+      "P1",
+      "P2",
+      "P3"
+    ]
+  },
+  "deployment_risk": {
+    "algorithm": "Gradient Boosting Binary Classifier (No Temporal Leakage)",
+    "test_samples": 300,
+    "precision": 0.6351,
+    "recall": 0.5281,
+    "f1": 0.5767,
+    "accuracy": 0.77,
+    "confusion_matrix": [
+      [
+        184,
+        27
+      ],
+      [
+        42,
+        47
+      ]
+    ]
+  }
+}

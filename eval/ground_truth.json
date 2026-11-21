@@ -1,0 +1,74 @@
+{
+  "SCENARIO_A": {
+    "scenario_id": "SCENARIO_A",
+    "name": "Payments Service Post-Deployment Regression",
+    "service_slug": "payments-service",
+    "incident_number": "INC-4091",
+    "expected_severity": "P0",
+    "expected_root_cause_keywords": ["deadlock", "lock", "table", "v2.4.2", "PR #412", "commit", "query hint", "e7f8a9b"],
+    "expected_remediation_action": "ROLLBACK",
+    "expected_target_version": "v2.4.1",
+    "key_evidence": [
+      "Deployment v2.4.2 at 2h 45m ago",
+      "PR #412 adding locking hints",
+      "5xx error rate spike from 0.2% to 18.5%",
+      "Database lock timeout and deadlock logs",
+      "Runbook recommending rollback to v2.4.1"
+    ]
+  },
+  "SCENARIO_B": {
+    "scenario_id": "SCENARIO_B",
+    "name": "Critical Remote Dependency Vulnerability",
+    "service_slug": "auth-service",
+    "vulnerability_cve": "CVE-2024-21626",
+    "expected_severity": "P1",
+    "expected_root_cause_keywords": ["runc", "container escape", "file descriptor leak", "CVE-2024-21626", "v1.1.11"],
+    "expected_remediation_action": "APPLY_HOTFIX",
+    "expected_target_version": "v1.1.12",
+    "key_evidence": [
+      "CVSS 8.6 Critical rating",
+      "Internet-facing service context",
+      "Active exploitability = True"
+    ]
+  },
+  "SCENARIO_C": {
+    "scenario_id": "SCENARIO_C",
+    "name": "Suspicious IAM Account Privilege Escalation",
+    "principal": "svc-deploy-worker@nexatech.internal",
+    "expected_severity": "P1",
+    "expected_root_cause_keywords": ["unauthorized IP", "organizationAdmin", "external subnet", "198.51.100.42", "credential leak"],
+    "expected_remediation_action": "ROTATE_CREDENTIALS",
+    "key_evidence": [
+      "Escalation to Organization Admin at 02:14 UTC",
+      "Origin IP 198.51.100.42 outside internal VPC (10.240.0.0/16)",
+      "Violation of IAM Security Policy"
+    ]
+  },
+  "SCENARIO_D": {
+    "scenario_id": "SCENARIO_D",
+    "name": "Order Processing Memory Leak Canary Degradation",
+    "service_slug": "order-processing",
+    "incident_number": "INC-3982",
+    "expected_severity": "P2",
+    "expected_root_cause_keywords": ["memory leak", "heap", "canary", "v3.1.0-rc1", "saturation"],
+    "expected_remediation_action": "ROLLBACK",
+    "expected_target_version": "v3.0.4",
+    "key_evidence": [
+      "Memory growth steadily reaching 92%",
+      "Canary deployment v3.1.0-rc1",
+      "Connection pool / heap growth logs"
+    ]
+  },
+  "SCENARIO_E": {
+    "scenario_id": "SCENARIO_E",
+    "name": "Baseline Steady State",
+    "service_slug": "notification-service",
+    "expected_is_anomaly": false,
+    "expected_alert_warranted": false,
+    "key_evidence": [
+      "Error rate < 0.1%",
+      "p99 latency < 150ms",
+      "Routine diurnal traffic fluctuation"
+    ]
+  }
+}

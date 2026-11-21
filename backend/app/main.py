@@ -1,3 +1,7 @@
+from pathlib import Path
+
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
@@ -100,3 +104,50 @@ app.include_router(ml_router, prefix=f"{api_v1}/ml", tags=["Machine Learning Pip
 app.include_router(knowledge_router, prefix=f"{api_v1}/knowledge", tags=["RAG Knowledge Base"])
 app.include_router(agent_router, prefix=f"{api_v1}/agent", tags=["Google ADK Agent Orchestration"])
 app.include_router(evaluation_router, prefix=f"{api_v1}/evaluation", tags=["Benchmark & Evaluation Runs"])
+
+# ============================================================
+# FRONTEND SERVING - React + Vite on the same Render domain
+# ============================================================
+
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
+if FRONTEND_DIST.is_dir():
+
+    # Serve compiled frontend assets
+    assets_dir = FRONTEND_DIST / "assets"
+
+    if assets_dir.is_dir():
+        app.mount(
+            "/assets",
+            StaticFiles(directory=str(assets_dir)),
+            name="frontend-assets"
+        )
+
+    # Main dashboard homepage
+    @app.get("/", include_in_schema=False)
+    async def serve_frontend():
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
+
+    # React SPA routing and static file fallback
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_react_routes(full_path: str):
+
+        # Keep unknown API requests as API 404s
+        if full_path == "api" or full_path.startswith("api/"):
+            return JSONResponse(
+                status_code=404,
+                content={"detail": "Not Found"}
+            )
+
+        # Serve an existing frontend file
+        requested_file = (FRONTEND_DIST / full_path).resolve()
+
+        if (
+            requested_file.is_file()
+            and requested_file.is_relative_to(FRONTEND_DIST.resolve())
+        ):
+            return FileResponse(str(requested_file))
+
+        # Otherwise return React homepage for client-side routing
+        return FileResponse(str(FRONTEND_DIST / "index.html"))
+
